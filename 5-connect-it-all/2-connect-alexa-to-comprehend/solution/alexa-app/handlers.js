@@ -45,11 +45,12 @@ const handlers = {
         } else {
           this.response.speak(`There's no apps that fit your inquiry!`);
         }
+
+        this.emit(':responseReady');
         
       })
       
     }
-    this.emit(':responseReady');
   }
 };
 

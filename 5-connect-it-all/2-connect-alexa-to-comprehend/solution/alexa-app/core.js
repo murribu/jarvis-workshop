@@ -6,7 +6,7 @@ const assistantVerbs = ['need', 'want', 'have', 'like', 'must', 'require', 'coul
 
 module.exports = function (text) {
   // 1. Get all syntax information
-  return comprehendRepository(text).then(sentenceElements => {
+  return comprehendRepository.comprehendAnalyze(text).then(sentenceElements => {
     let verbs = sentenceElements
       .filter(element => element.PartOfSpeech.Tag == 'VERB')
       .filter(verb => !assistantVerbs.includes(verb.Text));

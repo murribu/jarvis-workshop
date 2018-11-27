@@ -17,8 +17,14 @@ module.exports = {
   },
   searchApps: (searchTerm) => {
     return rp.get(SEARCH_APPS_PATH+searchTerm)
-      .then(response => JSON.parse(response.body))
-      .then(body => body.Applications)
+      .then(response => {
+        console.log('RESPONSE', response);
+        return JSON.parse(response.body)
+      })
+      .then(body => {
+        console.log('SAR RESPONSE BODY', body);
+        return body.applications;
+      })
       .catch(error => {
         console.log(error);
         throw error;
