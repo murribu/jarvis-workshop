@@ -1,7 +1,8 @@
 'use strict';
 
 const core = require('./core'),
-  combiner = require('./combiner');
+  combiner = require('./combiner'),
+  SAR = require('./sar-repository');
 
 const handlers = {
   'LaunchRequest': function () {
@@ -43,18 +44,19 @@ const handlers = {
         
         if (foundApp && foundApp.name) {
           foundAppName = foundApp.name;
-          promise = createService(foundComponent.ApplicationId);
+          promise = createService(foundApp.id);
         } else {
           promise = Promise.resolve();
           this.response.speak(`There's no apps that fit your inquiry!`);
+          this.emit(':responseReady');
         }
         return promise;
       }).then(reply => {
-        this.response.speak(`I've found an app named ${foundApp.name} and am deploying it right now, should be available in a minute or two!`);
+        this.response.speak(`I've found an app named ${foundAppName} and am deploying it right now, should be available in a minute or two!`);
+        this.emit(':responseReady');
       });
       
     }
-    this.emit(':responseReady');
   }
 };
 
@@ -65,7 +67,7 @@ function createService(appId) {
       return SAR.createCFChangeSet(appId, '11111-dynamodb-display-stack');
     }).then(cfResponse => {
       setTimeout(function () {
-        executeCFSet(cloudformation, cfResponse.ChangeSetId, cfResponse.StackId, function(){});
+        SAR.executeCFChangeSet(cfResponse.ChangeSetId, cfResponse.StackId, function(){});
       }, 5000);
       resolve(cfResponse);
     })
